@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>js-recording</title>
+  </head>
+  <body>
+    <button id="startOscillator">Start Oscillator</button>
+    <button id="stopOscillator">Stop Oscillator</button>
+    <button id="startRecording">Start Recording</button>
+    <button id="stopRecording">Stop Recording</button>
+    <a id="download-link" download="recording.webm">Download Recording</a>
+    <script type="text/javascript">
+      const startOscBtn = document.getElementById('startOscillator');
+      const stopOscBtn = document.getElementById('stopOscillator');
+      const startRecBtn = document.getElementById('startRecording');
+      const stopRecBtn = document.getElementById('stopRecording');
+      const downloadLink = document.getElemenyById('download-link');
+      let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      let osc = null;
+      let mediaRecorder = null;
+      let audioChunks = [];
+      startOscBtn.onclick = () => {
+        osc = audioCtx.createOscillator();
+	osc.type = 'sine';
+	osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+	osc.connect(audioCtx.destination);
+	osc.start();
+      };
+      stopOscBtn.onclick = () => {
+        if (osc) {
+          osc.stop();
+	  osc.disconnect();
+	}
+      };
+      startRecBtn.onclick = () => {
+        let dest = audioCtx.createMediaStreamDestination();
+	osc.connect(dest);
+	mediaRecorder = new MediaRecorder(dest.stream);
+	mediaRecorder.ondataavailable = (event) => {
+          audioChunks.push(event.data);
+	};
+	mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+	  const audioUrl = URL.createObjectURL(audioBlob);
+	  downloadLink.hreaf = audioUrl;
+	};
+	mediaRecorder.start();
+      };
+      stopRecBtn.onclick = () => {
+        if (mediaRecorder && mediaRecorder.state == 'recording') {
+          mediaRecorder.stop();
+	}
+      };
+    </script>
+  </body>
+</html>
