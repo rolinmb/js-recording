@@ -16,7 +16,7 @@
       const stopOscBtn = document.getElementById('stopOscillator');
       const startRecBtn = document.getElementById('startRecording');
       const stopRecBtn = document.getElementById('stopRecording');
-      const downloadLink = document.getElemenyById('download-link');
+      const downloadLink = document.getElementById('download-link');
       let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       let osc = null;
       let mediaRecorder = null;
@@ -44,7 +44,7 @@
 	mediaRecorder.onstop = () => {
           const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
 	  const audioUrl = URL.createObjectURL(audioBlob);
-	  downloadLink.hreaf = audioUrl;
+	  downloadLink.href = audioUrl;
 	};
 	mediaRecorder.start();
       };
